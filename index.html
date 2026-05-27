@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Stuck to Strategy | Diagnostic</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1679A2;
+    --blue-light: #D6EBF5;
+    --navy: #07111F;
+    --navy-top: #101A33;
+    --indigo: #1D2A44;
+    --periwinkle: #E8EDF5;
+    --silver: #AAB4C8;
+    --muted: #6E7FA7;
+    --gold: #C4B49A;
+    --white: #FFFFFF;
+    --body-text: #0D1B2E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--periwinkle);
+    color: var(--body-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* HEADER */
+  .site-header {
+    width: 100%;
+    background: linear-gradient(160deg, #101A33 0%, #07111F 100%);
+    padding: 40px 28px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .site-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 48px;
+    background: var(--periwinkle);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+
+  .header-star {
+    font-size: 1.4rem;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 12px;
+    letter-spacing: 0.2em;
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    line-height: 1.15;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .header-script {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.6rem;
+    color: var(--silver);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .header-sub {
+    font-size: 0.88rem;
+    color: var(--silver);
+    line-height: 1.6;
+    max-width: 320px;
+    margin: 0 auto;
+    font-weight: 300;
+  }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    width: 100%;
+    background: var(--indigo);
+    padding: 12px 24px 14px;
+    display: none;
+  }
+
+  .progress-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 640px;
+    margin: 0 auto 8px;
+  }
+
+  .progress-star { color: var(--gold); font-size: 1.1rem; }
+  .progress-label { font-size: 0.78rem; color: var(--silver); }
+
+  .progress-track {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    height: 5px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--blue);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  /* CONTAINER */
+  .container {
+    width: 100%;
+    max-width: 640px;
+    padding: 28px 24px 80px;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* INTRO */
+  .intro-badge {
+    display: inline-block;
+    background: var(--indigo);
+    color: var(--silver);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 22px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    line-height: 1.2;
+    color: var(--body-text);
+    margin-bottom: 20px;
+  }
+
+  .intro-title span {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .intro-body {
+    font-size: 0.97rem;
+    line-height: 1.75;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .intro-note {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 18px 20px 18px 56px;
+    margin: 22px 0 28px;
+    line-height: 1.65;
+    font-size: 0.88rem;
+    color: var(--indigo);
+    position: relative;
+    box-shadow: 0 2px 12px rgba(13,27,46,0.07);
+  }
+
+  .intro-note::before {
+    content: '✦';
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    background: var(--indigo);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 16px 32px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary:hover { background: var(--navy); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* QUESTIONS */
+  .q-number {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    line-height: 1.35;
+    color: var(--body-text);
+    margin-bottom: 28px;
+  }
+
+  .q-subtitle {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-top: -18px;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .multi-note {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    background: var(--white);
+    border: 1.5px solid #D0D8E8;
+    border-radius: 10px;
+    padding: 15px 50px 15px 18px;
+    font-size: 0.95rem;
+    color: var(--body-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+    position: relative;
+    box-shadow: 0 1px 4px rgba(13,27,46,0.04);
+  }
+
+  .option:hover { border-color: var(--blue); background: var(--blue-light); }
+
+  .option.selected {
+    border-color: var(--blue);
+    background: var(--white);
+    color: var(--blue);
+    font-weight: 500;
+  }
+
+  .option.selected::after {
+    content: '✓';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--blue);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .option.multi-selected {
+    border-color: var(--blue);
+    background: var(--white);
+    color: var(--blue);
+    font-weight: 500;
+  }
+
+  .option.multi-selected::after {
+    content: '✓';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--blue);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .scale-wrap { display: flex; gap: 10px; justify-content: space-between; }
+
+  .scale-btn {
+    flex: 1;
+    background: var(--white);
+    border: 1.5px solid #D0D8E8;
+    border-radius: 10px;
+    padding: 16px 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--body-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(13,27,46,0.04);
+  }
+
+  .scale-btn:hover { border-color: var(--blue); background: var(--blue-light); }
+  .scale-btn.selected { border-color: var(--blue); background: var(--blue); color: var(--white); }
+
+  .scale-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; color: var(--muted); }
+
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
+
+  .btn-back {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    padding: 8px 0;
+  }
+
+  .btn-back:hover { color: var(--body-text); }
+
+  .btn-next {
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 13px 28px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s ease;
+    opacity: 0.35;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-next.enabled { opacity: 1; pointer-events: all; }
+  .btn-next.enabled:hover { background: var(--navy); }
+
+  /* TIEBREAKER */
+  .tiebreaker-label {
+    display: inline-block;
+    background: var(--indigo);
+    color: var(--silver);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* RESULT */
+  .result-header {
+    background: linear-gradient(160deg, #101A33 0%, #07111F 100%);
+    border-radius: 14px;
+    padding: 36px 28px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .result-star { color: var(--gold); font-size: 1.2rem; margin-bottom: 10px; display: block; }
+  .result-label { font-size: 0.72rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+  .result-profile { font-family: 'Playfair Display', serif; font-size: 1.9rem; color: var(--gold); margin-bottom: 14px; }
+  .result-oneliner { font-size: 0.95rem; color: var(--silver); line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+  .result-cta-box {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 28px 24px;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(13,27,46,0.08);
+  }
+
+  .result-cta-box h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--body-text); margin-bottom: 12px; }
+  .result-cta-box p { font-size: 0.92rem; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+  .price-tag { font-size: 1.8rem; font-weight: 700; color: var(--indigo); margin-bottom: 4px; }
+  .price-note { font-size: 0.8rem; color: var(--muted); margin-bottom: 22px; }
+
+  /* FOOTER */
+  .site-footer {
+    text-align: center;
+    padding: 0 24px 40px;
+    position: relative;
+  }
+
+  .footer-moon {
+    color: var(--muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 8px;
+    display: block;
+    opacity: 0.5;
+  }
+
+  .footer-text {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="header-star">✦ ✧ ✦</span>
+  <h1 class="header-title">From Stuck<br>to Strategy</h1>
+  <span class="header-script">Clarity creates momentum.</span>
+  <p class="header-sub">A diagnostic for women who have done everything right and are still stuck.</p>
+</header>
+
+<div class="progress-bar-wrap" id="progressWrap">
+  <div class="progress-top-row">
+    <span class="progress-star">✦</span>
+    <span class="progress-label" id="progressLabel">Question 1 of 15</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="screen active" id="screen-intro">
+    <div class="intro-badge">Free Diagnostic</div>
+    <h2 class="intro-title">You have done the work.<br><span>Let's figure out why you're still stuck.</span></h2>
+    <p class="intro-body">This is not another quiz that tells you your personality type and sends you on your way. This is 15 honest questions about your real situation. Your answers determine your profile.</p>
+    <p class="intro-body">At the end you will see your profile and a one line description of where you are.</p>
+    <div class="intro-note">Want the full picture? Your complete personalized report, including what applies to you, what to skip, what to focus on first, and your realistic next step, is available for $17 after you see your results.</div>
+    <button class="btn-primary" onclick="showScreen('screen-email')"><span>✦</span> Start the Diagnostic</button>
+  </div>
+
+  <div class="screen" id="screen-email">
+    <div class="intro-badge">One quick step</div>
+    <h2 class="q-text">Where should we send your results?</h2>
+    <p class="intro-body" style="margin-bottom:24px;">Enter your email and we will make sure your profile is waiting for you at the end.</p>
+    <input type="email" id="emailInput" placeholder="Your email address" style="width:100%;padding:14px 18px;border:1.5px solid #D0D8E8;border-radius:10px;font-size:0.95rem;font-family:'DM Sans',sans-serif;color:#0D1B2E;background:#fff;margin-bottom:12px;box-sizing:border-box;" oninput="checkEmail()" />
+    <div id="emailError" style="font-size:0.8rem;color:#c0392b;margin-bottom:12px;display:none;">Please enter a valid email address.</div>
+    <button class="btn-primary" id="btnEmailNext" onclick="submitEmail()">Begin the Diagnostic &rarr;</button>
+  </div>
+
+  <div class="screen" id="screen-questions">
+    <div class="q-number" id="qNumber">Question 1 of 15</div>
+    <div class="q-text" id="qText"></div>
+    <div class="q-subtitle" id="qSubtitle" style="display:none;"></div>
+    <div class="multi-note" id="multiNote" style="display:none;">Choose all that apply</div>
+    <div class="options" id="optionsWrap"></div>
+    <div class="nav-row">
+      <button class="btn-back" id="btnBack" onclick="goBack()">Back</button>
+      <button class="btn-next" id="btnNext" onclick="goNext()">Next &rarr;</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-tiebreaker">
+    <div class="tiebreaker-label">One more question</div>
+    <div class="q-text" id="tbText">What feels most true right now?</div>
+    <div class="options" id="tbOptions"></div>
+    <div class="nav-row">
+      <div></div>
+      <button class="btn-next" id="btnTbNext" onclick="resolveTie()">See My Profile &rarr;</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-result">
+    <div class="result-header">
+      <span class="result-star">✦</span>
+      <div class="result-label">Your Profile</div>
+      <div class="result-profile" id="resultProfile"></div>
+      <div class="result-oneliner" id="resultOneliner"></div>
+    </div>
+    <div class="result-cta-box">
+      <h3>Ready for your full report?</h3>
+      <p>Your personalized report tells you exactly what applies to your situation, what you can skip, what to focus on first, and your realistic next step. No generic advice.</p>
+      <div class="price-tag">$17</div>
+      <div class="price-note">Instant access. Delivered to your inbox.</div>
+      <button class="btn-primary" onclick="goToPurchase()">Get My Full Report</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="site-footer">
+  <span class="footer-moon">· ✦ ☽ ✦ ·</span>
+  <p class="footer-text">&copy; 2026 Porsche Hudson | The Abundance Advocate</p>
+</div>
+
+<script>
+const profiles = {
+  BB: { name: "The Buried Beginner", oneliner: "You have an idea and a lot of fear. You have not started yet and you are not sure what the first real step even is.", payhipUrl: "https://theabundanceadvocate.gumroad.com/l/djadgi" },
+  SS: { name: "The Stalled Starter", oneliner: "You have something set up but nothing is moving. You are doing things but none of them are adding up.", payhipUrl: "https://theabundanceadvocate.gumroad.com/l/djadgi" },
+  EE: { name: "The Exhausted Employed", oneliner: "You are still working a job and trying to build something on the side. But there is nothing left of you by the time you get to it.", payhipUrl: "https://theabundanceadvocate.gumroad.com/l/djadgi" },
+  MM: { name: "The Misdirected Mover", oneliner: "You are doing all the things. You are just not confident you are doing the right things in the right order.", payhipUrl: "https://theabundanceadvocate.gumroad.com/l/djadgi" },
+  BR: { name: "The Burned Out Rebuilder", oneliner: "You have been at this long enough to feel like you should be further along. That gap between where you are and where you thought you would be is making it hard to move.", payhipUrl: "https://theabundanceadvocate.gumroad.com/l/djadgi" }
+};
+
+const tiebreakers = {
+  "MM-BR": { options: [{ text: "I am still showing up but I am not sure I am going in the right direction.", winner: "MM" }, { text: "I have been at this so long I am not sure I trust my own judgment anymore.", winner: "BR" }] },
+  "BB-BR": { options: [{ text: "I have not really started yet and I am not sure where to begin.", winner: "BB" }, { text: "I have started before and it did not work and starting again feels hard.", winner: "BR" }] },
+  "EE-BR": { options: [{ text: "I am drained from my job and do not have much left to give this.", winner: "EE" }, { text: "I am drained from trying and failing and I am not sure how much fight I have left.", winner: "BR" }] },
+  "MM-SS": { options: [{ text: "I am putting in real effort but I have little to nothing to show for it.", winner: "MM" }, { text: "I get a sale here and there but I cannot figure out how to make it happen consistently.", winner: "SS" }] }
+};
+
+const questions = [
+  { id:1, text:"Do you have a business right now, even if it is informal or just getting started?", type:"single", options:[{text:"Yes",scores:{MM:2,BR:2}},{text:"Sort of — I have an idea but nothing official",scores:{SS:2,BB:2}},{text:"No",scores:{BB:3}}] },
+  { id:2, text:"Are you making any money from it yet?", type:"single", options:[{text:"Yes, but it is random",scores:{SS:2,MM:2}},{text:"No, not yet",scores:{BB:2,EE:2,BR:2}}] },
+  { id:3, text:"Are you currently working a job outside of this?", type:"single", options:[{text:"Yes, full time",scores:{EE:3}},{text:"Yes, part time",scores:{EE:2}},{text:"No",scores:{MM:1,BR:1}}] },
+  { id:4, text:"After work, kids, and everything else — how much time do you realistically have each week?", subtitle:"Not the hours you wish you had. The real ones.", type:"single", options:[{text:"Less than 5 hours a week",scores:{EE:3}},{text:"5 to 10 hours",scores:{EE:1,SS:1}},{text:"More than 10 hours",scores:{MM:2,BR:2}}] },
+  { id:5, text:"How is your budget for investing in the business right now?", type:"single", options:[{text:"Tight — close to nothing",scores:{BB:2,EE:2,BR:2}},{text:"A little — maybe $50 to $100 a month",scores:{SS:1,MM:1}},{text:"I have some room",scores:{MM:2,BR:2}}] },
+  { id:6, text:"How urgent is the income?", type:"single", options:[{text:"I need something coming in soon",scores:{BB:2,EE:2,BR:2}},{text:"It would help but I have some breathing room",scores:{SS:1,MM:1,EE:1}},{text:"I am building for the future",scores:{MM:2,BR:2}}] },
+  { id:7, text:"Have you bought any of these trying to figure this out?", type:"multi", options:[{text:"Online courses",scores:{BR:1,MM:1}},{text:"Planners or workbooks",scores:{BR:1,MM:1}},{text:"Templates or bundles",scores:{BR:1,MM:1}},{text:"Coaching or mentorship",scores:{BR:1,MM:1}},{text:"None of the above",scores:{BB:1,EE:1}}] },
+  { id:8, text:"If you have purchased any of those — did they help?", type:"single", options:[{text:"Not really — I bought courses and still feel lost",scores:{BR:3,MM:3}},{text:"Somewhat but I am still stuck",scores:{SS:2,BB:2}},{text:"I have not finished them",scores:{EE:2,BB:2}}] },
+  { id:9, text:"How would you describe where you are mentally right now?", type:"single", options:[{text:"Burned out and barely hanging on",scores:{BR:3,EE:3}},{text:"Frustrated but still showing up",scores:{SS:2,MM:2}},{text:"Clear headed but pointed in the wrong direction",scores:{MM:3}}] },
+  { id:10, text:"What is the main thing holding you back?", type:"single", options:[{text:"I do not know where to start",scores:{BB:3}},{text:"I know what to do but I cannot make myself do it",scores:{BR:2,EE:2}},{text:"I am doing things but nothing is working",scores:{MM:3,SS:3}}] },
+  { id:11, text:"What does getting unstuck look like to you?", type:"single", options:[{text:"Making my first dollar",scores:{BB:2,EE:2}},{text:"Having a consistent income",scores:{SS:2,MM:2}},{text:"Finally feeling like I am moving in the right direction",scores:{MM:2,BR:2}}] },
+  { id:12, text:"Which of these sounds most like you?", type:"single", options:[{text:"I am starting from zero and I am scared",scores:{BB:3}},{text:"I have started but I do not know what I am doing",scores:{SS:3}},{text:"I am doing all the things but I do not feel confident in my path",scores:{MM:3}},{text:"Everything pays pennies or wants a full second job worth of hours",scores:{EE:3}}] },
+  { id:13, text:"What is your biggest fear about this not working?", type:"single", options:[{text:"That I wasted money on things that did not help",scores:{BR:2,MM:2}},{text:"That I am just not cut out for this",scores:{BB:2,BR:2}},{text:"That I waited too long",scores:{BR:3}}] },
+  { id:14, text:"On a scale of 1 to 5 — how overwhelmed do you feel right now?", type:"scale", options:[{text:"1",scores:{MM:1}},{text:"2",scores:{MM:1}},{text:"3",scores:{SS:1,EE:1}},{text:"4",scores:{BB:2,BR:2,EE:2}},{text:"5",scores:{BB:2,BR:2,EE:2}}], scaleLabels:["I am okay","I can barely think straight"] },
+  { id:15, text:"Where do you want to be in a year?", type:"single", options:[{text:"Out of my 9 to 5",scores:{EE:2,MM:2}},{text:"Supplementing my income without burning out",scores:{EE:2,SS:2}},{text:"Running something I am actually proud of",scores:{MM:2,BR:2}},{text:"Just stable — I need to breathe first",scores:{BR:2,BB:2}}] }
+];
+
+let userEmail = '';
+
+function checkEmail() {
+  const val = document.getElementById('emailInput').value;
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  document.getElementById('btnEmailNext').classList.toggle('enabled', valid);
+}
+
+function submitEmail() {
+  const val = document.getElementById('emailInput').value;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+    document.getElementById('emailError').style.display = 'block';
+    return;
+  }
+  userEmail = val;
+  fetch('https://api.convertkit.com/v3/tags/19798483/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: 'fCvuRB4BzYIYrp_4JpLhsg', email: userEmail })
+  }).catch(() => {});
+  startQuiz();
+}
+
+let currentQ=0,answers={},scores={BB:0,SS:0,EE:0,MM:0,BR:0},multiSelections=[],tbSelection=null;
+
+function startQuiz(){showScreen('screen-questions');document.getElementById('progressWrap').style.display='block';renderQuestion();}
+function renderQuestion(){
+  const q=questions[currentQ];
+  document.getElementById('qNumber').textContent=`Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('qText').textContent=q.text;
+  const sub=document.getElementById('qSubtitle');
+  if(q.subtitle){sub.textContent=q.subtitle;sub.style.display='block';}else{sub.style.display='none';}
+  document.getElementById('multiNote').style.display=q.type==='multi'?'block':'none';
+  multiSelections=answers[currentQ]?.multi||[];
+  const wrap=document.getElementById('optionsWrap');wrap.innerHTML='';
+  if(q.type==='scale'){
+    const sw=document.createElement('div');sw.className='scale-wrap';
+    q.options.forEach((opt,i)=>{const b=document.createElement('button');b.className='scale-btn';b.textContent=opt.text;if(answers[currentQ]?.single===i)b.classList.add('selected');b.onclick=()=>selectScale(i);sw.appendChild(b);});
+    wrap.appendChild(sw);
+    const lbl=document.createElement('div');lbl.className='scale-labels';lbl.innerHTML=`<span>${q.scaleLabels[0]}</span><span>${q.scaleLabels[1]}</span>`;wrap.appendChild(lbl);
+  }else{
+    q.options.forEach((opt,i)=>{const b=document.createElement('button');b.className='option';b.textContent=opt.text;if(q.type==='multi'&&multiSelections.includes(i))b.classList.add('multi-selected');if(q.type==='single'&&answers[currentQ]?.single===i)b.classList.add('selected');b.onclick=()=>q.type==='multi'?selectMulti(i):selectSingle(i);wrap.appendChild(b);});
+  }
+  updateNav();updateProgress();
+}
+function selectSingle(i){answers[currentQ]={single:i};document.querySelectorAll('#optionsWrap .option').forEach((el,idx)=>el.classList.toggle('selected',idx===i));document.getElementById('btnNext').classList.add('enabled');}
+function selectScale(i){answers[currentQ]={single:i};document.querySelectorAll('.scale-btn').forEach((el,idx)=>el.classList.toggle('selected',idx===i));document.getElementById('btnNext').classList.add('enabled');}
+function selectMulti(i){const idx=multiSelections.indexOf(i);if(idx>-1)multiSelections.splice(idx,1);else multiSelections.push(i);answers[currentQ]={multi:[...multiSelections]};document.querySelectorAll('#optionsWrap .option').forEach((el,eidx)=>el.classList.toggle('multi-selected',multiSelections.includes(eidx)));document.getElementById('btnNext').classList.toggle('enabled',multiSelections.length>0);}
+function updateNav(){const has=answers[currentQ]!==undefined&&(answers[currentQ].single!==undefined||(answers[currentQ].multi&&answers[currentQ].multi.length>0));document.getElementById('btnNext').classList.toggle('enabled',has);document.getElementById('btnBack').style.visibility=currentQ===0?'hidden':'visible';const isLast=currentQ===questions.length-1;document.getElementById('btnNext').innerHTML=isLast?'See My Profile &rarr;':'Next &rarr;';}
+function updateProgress(){document.getElementById('progressFill').style.width=(currentQ/questions.length*100)+'%';document.getElementById('progressLabel').textContent=`Question ${currentQ+1} of ${questions.length}`;}
+function goBack(){if(currentQ>0){currentQ--;renderQuestion();}}
+function goNext(){
+  const q=questions[currentQ],ans=answers[currentQ];if(!ans)return;
+  if(ans._scored)ans._scored.forEach(([p,v])=>scores[p]-=v);
+  const scored=[];
+  if(q.type==='multi')ans.multi.forEach(i=>Object.entries(q.options[i].scores).forEach(([p,v])=>{scores[p]+=v;scored.push([p,v]);}));
+  else Object.entries(q.options[ans.single].scores).forEach(([p,v])=>{scores[p]+=v;scored.push([p,v]);});
+  ans._scored=scored;
+  if(currentQ<questions.length-1){currentQ++;renderQuestion();}else{showResult();}
+}
+function showResult(){const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);if(sorted[0][1]-sorted[1][1]<=2)showTiebreaker(sorted[0][0],sorted[1][0]);else displayProfile(sorted[0][0]);}
+function showTiebreaker(a,b){const tb=tiebreakers[`${a}-${b}`]||tiebreakers[`${b}-${a}`];if(!tb){displayProfile(a);return;}showScreen('screen-tiebreaker');document.getElementById('progressWrap').style.display='none';tbSelection=null;document.getElementById('btnTbNext').classList.remove('enabled');const wrap=document.getElementById('tbOptions');wrap.innerHTML='';tb.options.forEach((opt,i)=>{const b=document.createElement('button');b.className='option';b.textContent=opt.text;b.onclick=()=>{tbSelection=opt.winner;document.querySelectorAll('#tbOptions .option').forEach((el,idx)=>el.classList.toggle('selected',idx===i));document.getElementById('btnTbNext').classList.add('enabled');};wrap.appendChild(b);});}
+function resolveTie(){if(tbSelection)displayProfile(tbSelection);}
+function displayProfile(key){const p=profiles[key];document.getElementById('resultProfile').textContent=p.name;document.getElementById('resultOneliner').textContent=p.oneliner;window._currentProfileKey=key;showScreen('screen-result');document.getElementById('progressWrap').style.display='none';}
+function goToPurchase(){window.location.href=profiles[window._currentProfileKey]?.payhipUrl||'https://payhip.com';}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+</script>
+</body>
+</html>
